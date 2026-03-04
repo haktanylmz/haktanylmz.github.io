@@ -156,3 +156,113 @@ header a:hover { opacity: 0.8; }
     border-radius: 50%;
     display: inline-block;
 }
+/* ------------------------------------- */
+/* SOL MENÜ ARAMA KUTUSU (SEARCH BAR)    */
+/* ------------------------------------- */
+.search-box {
+    position: relative;
+    margin-bottom: 20px;
+}
+.search-box .search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #8b949e;
+    font-size: 0.9rem;
+}
+.search-box input {
+    width: 100%;
+    background-color: transparent;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 8px 10px 8px 30px;
+    color: #c9d1d9;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.2s, background-color 0.2s;
+}
+.search-box input:focus {
+    border-color: #58a6ff;
+    background-color: #0d1117;
+}
+
+/* ------------------------------------- */
+/* ÜST AKSİYON BARI (Z-INDEX BÖLÜMÜ)     */
+/* ------------------------------------- */
+.top-action-bar {
+    position: sticky;
+    top: 0;
+    background-color: rgba(13, 17, 23, 0.95);
+    backdrop-filter: blur(5px);
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0 15px 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #30363d;
+}
+.top-action-bar .icon {
+    cursor: pointer;
+    font-size: 1.2rem;
+    margin-left: 15px;
+    color: #8b949e;
+    transition: color 0.2s;
+}
+.top-action-bar .left-actions .icon { margin-left: 0; margin-right: 15px; }
+.top-action-bar .icon:hover { color: #58a6ff; }
+
+/* ------------------------------------- */
+/* MAKALE VE İÇİNDEKİLER DÜZENİ          */
+/* ------------------------------------- */
+.article-layout {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    position: relative;
+}
+.markdown-wrapper {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Sağ İçindekiler (ToC) Menüsü */
+.toc-sidebar {
+    width: 250px;
+    position: sticky;
+    top: 80px;
+    border-left: 1px solid #30363d;
+    padding-left: 20px;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+}
+.toc-sidebar h4 {
+    color: #c9d1d9;
+    margin-bottom: 15px;
+    font-size: 1rem;
+    border-bottom: 1px solid #30363d;
+    padding-bottom: 5px;
+}
+.toc-sidebar ul { list-style: none; }
+.toc-sidebar li { margin-bottom: 8px; }
+.toc-sidebar a {
+    color: #8b949e;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: color 0.2s;
+    display: block;
+    line-height: 1.4;
+}
+.toc-sidebar a:hover { color: #58a6ff; text-decoration: underline; }
+
+/* Alt başlıkların girintileri */
+.toc-h2 { margin-left: 10px; }
+.toc-h3 { margin-left: 20px; font-size: 0.8rem !important; opacity: 0.8; }
+
+/* Mobil Uyumluluk Güncellemesi */
+@media (max-width: 1024px) {
+    .article-layout { flex-direction: column; }
+    .toc-sidebar { width: 100%; border-left: none; border-top: 1px solid #30363d; padding-left: 0; padding-top: 20px; position: static; }
+}
