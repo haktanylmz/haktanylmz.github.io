@@ -30,25 +30,28 @@
         </div>
 
         <div class="content-area">
-            <div class="top-action-bar">
-                <div class="left-actions">
-                    <svg class="svg-icon" title="Toggle Sidebar" onclick="toggleSidebar()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-                </div>
-                <div class="right-actions">
-                    <div class="dropdown-container">
-                        <svg class="svg-icon" title="Download" onclick="toggleDownloadMenu()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                        <div id="downloadMenu" class="dropdown-menu">
-                            <div onclick="downloadFile('pdf')">Download as PDF</div>
-                            <div onclick="downloadFile('md')">Download as Markdown (.md)</div>
-                        </div>
-                    </div>
-                    <svg class="svg-icon" title="Fullscreen" onclick="toggleFullScreen()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
-                    <svg class="svg-icon" title="Toggle Theme" onclick="toggleTheme()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-                </div>
-            </div>
-
             <div class="article-layout">
                 <div class="markdown-wrapper">
+                    
+                    <div class="top-action-bar">
+                        <div class="top-action-bar-inner">
+                            <div class="left-actions">
+                                <svg class="svg-icon" title="Toggle Sidebar" onclick="toggleSidebar()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                            </div>
+                            <div class="right-actions">
+                                <div class="dropdown-container">
+                                    <svg class="svg-icon" title="Download" onclick="toggleDownloadMenu()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                    <div id="downloadMenu" class="dropdown-menu">
+                                        <div onclick="downloadFile('pdf')">Download as PDF</div>
+                                        <div onclick="downloadFile('md')">Download as Markdown (.md)</div>
+                                    </div>
+                                </div>
+                                <svg class="svg-icon" title="Fullscreen" onclick="toggleFullScreen()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+                                <svg class="svg-icon" title="Toggle Theme" onclick="toggleTheme()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="markdown-body" id="content-body">
                         <p style="color: #8b949e;">Initializing connection...</p>
                     </div>

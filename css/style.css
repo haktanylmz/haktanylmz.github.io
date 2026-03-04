@@ -74,10 +74,9 @@ header a:hover { opacity: 0.8; }
 .search-box input { width: 100%; background-color: transparent; border: 1px solid #30363d; border-radius: 6px; padding: 8px 10px 8px 30px; color: #c9d1d9; font-family: 'Fira Code', monospace; font-size: 0.85rem; outline: none; transition: border-color 0.2s, background-color 0.2s; }
 .search-box input:focus { border-color: #58a6ff; background-color: #0d1117; }
 
-/* ------------------------------------- */
-/* DÜZELTİLEN KISIM: Z-Index 950 ve Katı Arka Plan */
-/* ------------------------------------- */
-.top-action-bar { position: sticky; top: 70px; background-color: #0d1117; z-index: 950; display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; margin-bottom: 20px; border-bottom: 1px solid #30363d; }
+/* YENİ HİZALAMA: Bar 100% Genişlikte, İçeriği Markdown Gibi 800px */
+.top-action-bar { position: sticky; top: 70px; background-color: #0d1117; z-index: 950; margin-bottom: 20px; border-bottom: 1px solid #30363d; width: 100%; }
+.top-action-bar-inner { display: flex; justify-content: space-between; align-items: center; max-width: 800px; margin: 0 auto; padding: 12px 40px; width: 100%; }
 .top-action-bar .left-actions, .top-action-bar .right-actions { display: flex; align-items: center; gap: 18px; }
 
 .svg-icon { width: 20px; height: 20px; cursor: pointer; color: #8b949e; transition: color 0.2s, transform 0.2s; display: block; }
@@ -86,7 +85,8 @@ header a:hover { opacity: 0.8; }
 .article-layout { display: flex; gap: 40px; align-items: flex-start; position: relative; }
 .markdown-wrapper { flex: 1; min-width: 0; }
 
-.toc-sidebar { width: 250px; position: sticky; top: 140px; border-left: 1px solid #30363d; padding-left: 20px; height: calc(100vh - 140px); overflow-y: auto; z-index: 100; }
+/* YENİ AYIRICI: height fit-content yapıldı, menü kadar uzar */
+.toc-sidebar { width: 250px; position: sticky; top: 140px; border-left: 1px solid #30363d; padding: 0 20px; height: fit-content; max-height: calc(100vh - 140px); overflow-y: auto; z-index: 100; }
 .toc-sidebar h4 { color: #c9d1d9; margin-bottom: 15px; font-size: 1rem; border-bottom: 1px solid #30363d; padding-bottom: 5px; }
 .toc-sidebar ul { list-style: none; }
 .toc-sidebar li { margin-bottom: 8px; }
@@ -106,8 +106,6 @@ header a:hover { opacity: 0.8; }
 .search-result-card:hover { border-color: #58a6ff; }
 
 .icon { display: inline-flex; align-items: center; justify-content: center; }
-.svg-icon { width: 22px; height: 22px; cursor: pointer; color: #8b949e; transition: color 0.2s, transform 0.2s; margin-left: 15px; }
-.svg-icon:hover { color: #58a6ff; }
 
 .article-navigation { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; margin-top: 40px; border-top: 1px solid #30363d; }
 .nav-link-box { display: flex; flex-direction: column; cursor: pointer; transition: transform 0.2s; max-width: 45%; }
