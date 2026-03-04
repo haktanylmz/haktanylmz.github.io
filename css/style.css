@@ -266,3 +266,90 @@ header a:hover { opacity: 0.8; }
     .article-layout { flex-direction: column; }
     .toc-sidebar { width: 100%; border-left: none; border-top: 1px solid #30363d; padding-left: 0; padding-top: 20px; position: static; }
 }
+/* ------------------------------------- */
+/* SOL MENÜ AÇ/KAPA VE İNDİRME MENÜSÜ    */
+/* ------------------------------------- */
+.sidebar {
+    transition: margin-left 0.3s ease, opacity 0.3s ease;
+}
+.sidebar.hidden {
+    margin-left: -340px; /* Menüyü sola kaydırarak gizler */
+    opacity: 0;
+}
+
+.dropdown-container { position: relative; display: inline-block; }
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 35px;
+    right: 0;
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 5px 0;
+    min-width: 170px;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+.dropdown-menu.show { display: block; }
+.dropdown-menu div {
+    padding: 10px 15px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    color: #c9d1d9;
+    transition: background 0.2s;
+    font-family: Arial, sans-serif;
+}
+.dropdown-menu div:hover { background-color: #30363d; color: #58a6ff; }
+
+/* ------------------------------------- */
+/* AYDINLIK (LIGHT) TEMA AYARLARI        */
+/* ------------------------------------- */
+body.light-theme {
+    background-color: #ffffff;
+    color: #24292f;
+}
+body.light-theme header,
+body.light-theme .sidebar,
+body.light-theme .top-action-bar,
+body.light-theme .toc-sidebar {
+    background-color: #f6f8fa;
+    border-color: #d0d7de;
+}
+body.light-theme .content-area,
+body.light-theme .markdown-wrapper {
+    background-color: #ffffff;
+}
+body.light-theme a { color: #0969da; }
+body.light-theme .file-link { color: #24292f; }
+body.light-theme .search-box input { color: #24292f; border-color: #d0d7de; }
+body.light-theme .search-box input:focus { background-color: #ffffff; border-color: #0969da; }
+body.light-theme .markdown-body h1, 
+body.light-theme .markdown-body h2, 
+body.light-theme .markdown-body h3 {
+    color: #0969da;
+    border-bottom-color: #d0d7de;
+}
+body.light-theme .markdown-body pre {
+    background-color: #f6f8fa !important;
+    border-color: #d0d7de;
+    color: #24292f;
+}
+body.light-theme .markdown-body th, body.light-theme .markdown-body td { border-color: #d0d7de; }
+body.light-theme .markdown-body th { background-color: #f6f8fa; color: #24292f; }
+body.light-theme .markdown-body tr:nth-child(even) { background-color: #ffffff; }
+body.light-theme .markdown-body tr:nth-child(odd) { background-color: #f6f8fa; }
+body.light-theme .dropdown-menu { background-color: #ffffff; border-color: #d0d7de; }
+body.light-theme .dropdown-menu div { color: #24292f; }
+body.light-theme .dropdown-menu div:hover { background-color: #f6f8fa; }
+body.light-theme .icon { color: #57606a; }
+body.light-theme .icon:hover { color: #0969da; }
+
+/* Arama Sonuç Kartları */
+.search-result-card {
+    margin-bottom: 15px; padding: 15px; border: 1px solid #30363d; 
+    border-radius: 6px; cursor: pointer; transition: border-color 0.2s;
+}
+.search-result-card:hover { border-color: #58a6ff; }
+body.light-theme .search-result-card { border-color: #d0d7de; }
+body.light-theme .search-result-card:hover { border-color: #0969da; }

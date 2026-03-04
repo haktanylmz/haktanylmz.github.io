@@ -10,6 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <link rel="stylesheet" href="../css/style.css">
 </head>
@@ -24,7 +25,7 @@
         <div class="sidebar" id="sidebar">
             <div class="search-box">
                 <span class="search-icon">🔍</span>
-                <input type="text" id="searchInput" placeholder="Search...">
+                <input type="text" id="searchInput" placeholder="Search in contents...">
             </div>
             
             <h3>Directory</h3>
@@ -37,17 +38,22 @@
             
             <div class="top-action-bar">
                 <div class="left-actions">
-                    <span class="icon" title="Menu">☰</span>
+                    <span class="icon" title="Toggle Sidebar" onclick="toggleSidebar()">☰</span>
                 </div>
                 <div class="right-actions">
-                    <span class="icon" title="Download">⭳</span>
-                    <span class="icon" title="Fullscreen">⛶</span>
-                    <span class="icon" title="Theme">◑</span>
+                    <div class="dropdown-container">
+                        <span class="icon" title="Download" onclick="toggleDownloadMenu()">⭳</span>
+                        <div id="downloadMenu" class="dropdown-menu">
+                            <div onclick="downloadFile('pdf')">Download as PDF</div>
+                            <div onclick="downloadFile('md')">Download as Markdown (.md)</div>
+                        </div>
+                    </div>
+                    <span class="icon" title="Fullscreen" onclick="toggleFullScreen()">⛶</span>
+                    <span class="icon" title="Toggle Theme" onclick="toggleTheme()">◑</span>
                 </div>
             </div>
 
             <div class="article-layout">
-                
                 <div class="markdown-wrapper">
                     <div class="markdown-body" id="content-body">
                         <h1>Welcome to the Terminal 🚀</h1>
@@ -61,7 +67,6 @@
                         <li><span style="color: #8b949e; font-size: 0.85rem;">Waiting for connection...</span></li>
                     </ul>
                 </div>
-
             </div>
         </div>
     </div>
@@ -75,19 +80,87 @@
         const tocList = document.getElementById('toc-list');
         const searchInput = document.getElementById('searchInput');
 
-        // Canlı Arama (Filtreleme) Fonksiyonu
-        searchInput.addEventListener('input', function(e) {
-            const term = e.target.value.toLowerCase();
-            const items = document.querySelectorAll('.file-link');
-            
-            items.forEach(item => {
-                if (item.innerText.toLowerCase().includes(term)) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
+        let allArticlesData = []; // Arama motoru için tüm makale içeriklerini burada tutacağız
+        let currentMarkdownRaw = ""; // İndirme işlemi için o anki makalenin ham hali
+        let currentArticleTitle = "Document";
+
+        // ==========================================
+        // ÜST BAR FONKSİYONLARI
+        // ==========================================
+
+        // 1. Sidebar Aç/Kapa
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('hidden');
+        }
+
+        // 2. Tam Ekran (Fullscreen)
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    alert(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+            }
+        }
+
+        // 3. Tema Değiştirme (Aydınlık / Karanlık)
+        function toggleTheme() {
+            document.body.classList.toggle('light-theme');
+            const isLight = document.body.classList.contains('light-theme');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        }
+
+        // Sayfa yüklendiğinde eski temayı hatırla
+        if(localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-theme');
+        }
+
+        // 4. İndirme Menüsü Aç/Kapa
+        function toggleDownloadMenu() {
+            document.getElementById('downloadMenu').classList.toggle('show');
+        }
+
+        // Ekranın başka yerine tıklayınca indirme menüsünü kapat
+        window.onclick = function(event) {
+            if (!event.target.matches('.icon') && !event.target.matches('.dropdown-menu')) {
+                const dropdowns = document.getElementsByClassName("dropdown-menu");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    if (dropdowns[i].classList.contains('show')) dropdowns[i].classList.remove('show');
                 }
-            });
-        });
+            }
+        }
+
+        // 5. Dosya İndirme (MD veya PDF)
+        function downloadFile(type) {
+            if (!currentMarkdownRaw) {
+                alert("Please select an article first to download.");
+                return;
+            }
+
+            if (type === 'md') {
+                const blob = new Blob([currentMarkdownRaw], { type: 'text/markdown' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${currentArticleTitle}.md`;
+                a.click();
+            } else if (type === 'pdf') {
+                const element = document.getElementById('content-body');
+                const opt = {
+                    margin:       10,
+                    filename:     `${currentArticleTitle}.pdf`,
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2 },
+                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+                html2pdf().set(opt).from(element).save();
+            }
+        }
+
+        // ==========================================
+        // GITHUB API VE ARAMA FONKSİYONLARI
+        // ==========================================
 
         async function loadGitHubMenu() {
             try {
@@ -114,11 +187,21 @@
                     const mdFiles = filesData.filter(file => file.name.endsWith('.md'));
 
                     mdFiles.forEach(file => {
+                        const cleanTitle = file.name.replace('.md', '').replace(/-/g, ' ');
+                        
+                        // Menüye link olarak ekle
                         const fileLink = document.createElement('a');
                         fileLink.className = 'file-link';
-                        fileLink.innerText = file.name.replace('.md', '').replace(/-/g, ' ');
-                        fileLink.onclick = () => loadMarkdownContent(file.path);
+                        fileLink.innerText = cleanTitle;
+                        fileLink.onclick = () => loadMarkdownContent(file.path, cleanTitle);
                         menuContainer.appendChild(fileLink);
+
+                        // Arama motoru için dosyanın içeriğini arka planda çekip diziye kaydet
+                        fetch(`https://raw.githubusercontent.com/${REPO_NAME}/${BRANCH}/${file.path}`)
+                            .then(res => res.text())
+                            .then(text => {
+                                allArticlesData.push({ path: file.path, title: cleanTitle, content: text });
+                            });
                     });
                 }
             } catch (error) {
@@ -126,7 +209,8 @@
             }
         }
 
-        async function loadMarkdownContent(filePath) {
+        async function loadMarkdownContent(filePath, title = "Document") {
+            currentArticleTitle = title;
             contentBody.innerHTML = '<p style="color: #8b949e;">Loading data packets...</p>';
             tocList.innerHTML = '<li><span style="color: #8b949e; font-size: 0.85rem;">Analyzing headers...</span></li>';
             
@@ -135,18 +219,66 @@
                 const response = await fetch(rawUrl);
                 if (!response.ok) throw new Error('Dosya okunamadı.');
 
-                const markdownText = await response.text();
-                contentBody.innerHTML = marked.parse(markdownText);
+                currentMarkdownRaw = await response.text(); // İndirme için ham veriyi kaydet
+                contentBody.innerHTML = marked.parse(currentMarkdownRaw);
                 
                 Prism.highlightAll();
-                
-                // İçindekiler menüsünü oluştur
                 generateTOC();
+                
+                // Mobil cihazlarda makaleye tıklanınca sol menüyü otomatik kapat
+                if(window.innerWidth <= 768) toggleSidebar();
                 
             } catch (error) {
                 contentBody.innerHTML = `<p style="color: #ff7b72;">Error: ${error.message}</p>`;
             }
         }
+
+        // Canlı ve Derinlemesine Arama (İçerikte arar)
+        searchInput.addEventListener('input', function(e) {
+            const term = e.target.value.toLowerCase();
+            
+            // Sol menüdeki isimleri filtrele
+            const items = document.querySelectorAll('.file-link');
+            items.forEach(item => {
+                if (item.innerText.toLowerCase().includes(term)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Orta alanda "Deep Search" (İçerik) sonuçlarını göster
+            if(term.length > 2) {
+                const results = allArticlesData.filter(art => 
+                    art.content.toLowerCase().includes(term) || art.title.toLowerCase().includes(term)
+                );
+                
+                if(results.length > 0) {
+                    let html = `<h1>Search Results for "${term}"</h1>`;
+                    results.forEach(res => {
+                        const index = res.content.toLowerCase().indexOf(term);
+                        const start = Math.max(0, index - 40);
+                        const end = Math.min(res.content.length, index + 60);
+                        let snippet = res.content.substring(start, end).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        
+                        html += `
+                            <div class="search-result-card" onclick="loadMarkdownContent('${res.path}', '${res.title}')">
+                                <h3 style="margin-top:0;">📄 ${res.title}</h3>
+                                <p style="font-size:0.9rem; color:#8b949e;">...${snippet}...</p>
+                            </div>
+                        `;
+                    });
+                    contentBody.innerHTML = html;
+                    tocList.innerHTML = '<li><span style="color: #8b949e; font-size: 0.85rem;">Search active...</span></li>';
+                } else {
+                    contentBody.innerHTML = `<h1>No results found for "${term}"</h1>`;
+                }
+            } else if (term.length === 0) {
+                // Arama kutusu silinirse ana ekrana dön
+                contentBody.innerHTML = `<h1>Welcome to the Terminal 🚀</h1><p style="color: #8b949e;">Select an article from the left directory to start reading.</p>`;
+                tocList.innerHTML = '<li><span style="color: #8b949e; font-size: 0.85rem;">Waiting for connection...</span></li>';
+            }
+        });
 
         function generateTOC() {
             tocList.innerHTML = ''; 
