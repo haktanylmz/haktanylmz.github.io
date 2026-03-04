@@ -4,47 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Me | Haktan Yılmaz</title>
-    
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
-    
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
-
     <header>
-        <a href="/index.html">cd ~/home</a>
+        <a href="../index.html">cd ~/home</a>
         <span style="color: #8b949e;">cat about_me.md</span>
     </header>
 
     <div class="content-area">
+        <div class="top-action-bar">
+            <div class="left-actions"></div>
+            <div class="right-actions">
+                <span class="icon" title="Fullscreen" onclick="toggleFullScreen()">⛶</span>
+                <span class="icon" title="Toggle Theme" onclick="toggleTheme()">◑</span>
+            </div>
+        </div>
+
         <div class="markdown-body" id="about-content">
             <p style="color: #8b949e;">Fetching profile data from GitHub...</p>
         </div>
+        
+        <footer class="site-footer">
+            <div>By Haktan Yılmaz</div>
+            <div>© Copyright 2026.</div>
+        </footer>
     </div>
 
+    <script src="../js/main.js"></script>
     <script>
-        // Senin Profil README dosyanın RAW (saf metin) linki
         const rawUrl = 'https://raw.githubusercontent.com/haktanylmz/haktanylmz/main/README.md';
         const contentArea = document.getElementById('about-content');
 
         async function loadAboutMe() {
             try {
                 const response = await fetch(rawUrl);
-                
                 if (!response.ok) throw new Error('README.md dosyasına ulaşılamadı.');
-
                 const markdownText = await response.text();
-
-                // Markdown'ı HTML'e çevir ve ekrana bas
                 contentArea.innerHTML = marked.parse(markdownText);
-                
             } catch (error) {
                 contentArea.innerHTML = `<p style="color: #ff7b72;">Error: ${error.message}</p>`;
             }
         }
-
-        // Sayfa açıldığında veriyi çek
         window.onload = loadAboutMe;
     </script>
 </body>

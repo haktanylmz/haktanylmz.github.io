@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="intro-body">
-
     <div class="intro-container">
         <h1>Haktan Yılmaz</h1>
         <div class="subtitle"><span id="typewriter"></span><span class="cursor"></span></div>
@@ -16,7 +15,7 @@
         <div class="nav-links">
             <a href="pages/about.html">About Me</a>
             <a href="pages/articles.html">Articles & Notes</a>
-            <a href="#projects">Projects</a>
+            <a href="pages/projects.html">Projects</a>
         </div>
 
         <div class="social-icons">
@@ -33,7 +32,6 @@
     </div>
 
     <script>
-        // Daktilo (Typewriter) Efekti JavaScript Kodu
         const text = "Network Engineer & MIS Student";
         const typewriterElement = document.getElementById("typewriter");
         let i = 0;
@@ -42,13 +40,12 @@
             if (i < text.length) {
                 typewriterElement.innerHTML += text.charAt(i);
                 i++;
-                setTimeout(typeWriter, 100); // Yazma hızı (milisaniye)
+                setTimeout(typeWriter, 100);
             }
         }
 
-        // Sayfa yüklendiğinde efekti başlat
         window.onload = () => {
-            setTimeout(typeWriter, 500); // Yarım saniye bekleyip başlar
+            setTimeout(typeWriter, 500);
         };
     </script>
 </body>
