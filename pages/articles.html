@@ -35,7 +35,6 @@
         </div>
 
         <div class="content-area">
-            
             <div class="top-action-bar">
                 <div class="left-actions">
                     <span class="icon" title="Toggle Sidebar" onclick="toggleSidebar()">☰</span>
@@ -63,6 +62,22 @@
                         <h1>Welcome to the Terminal 🚀</h1>
                         <p style="color: #8b949e;">Select an article from the left directory to start reading.</p>
                     </div>
+
+                    <div class="article-navigation" id="article-nav" style="display: none;">
+                        <div class="nav-link-box prev" id="nav-prev">
+                            <span class="nav-label">Previous</span>
+                            <span class="nav-title" id="nav-prev-title"></span>
+                        </div>
+                        <div class="nav-link-box next" id="nav-next">
+                            <span class="nav-label">Next</span>
+                            <span class="nav-title" id="nav-next-title"></span>
+                        </div>
+                    </div>
+
+                    <footer class="site-footer">
+                        <div>By Haktan Yılmaz</div>
+                        <div>© Copyright 2026.</div>
+                    </footer>
                 </div>
                 
                 <div class="toc-sidebar">
@@ -75,6 +90,8 @@
         </div>
     </div>
 
+    <script src="../js/main.js"></script>
+
     <script>
         const REPO_NAME = 'haktanylmz/notlarim'; 
         const BRANCH = 'main';
@@ -84,58 +101,11 @@
         const tocList = document.getElementById('toc-list');
         const searchInput = document.getElementById('searchInput');
 
-        let allArticlesData = []; // Arama motoru için tüm makale içeriklerini burada tutacağız
-        let currentMarkdownRaw = ""; // İndirme işlemi için o anki makalenin ham hali
+        let allArticlesData = []; 
+        let currentMarkdownRaw = ""; 
         let currentArticleTitle = "Document";
+        let currentArticleIndex = -1;
 
-        // ==========================================
-        // ÜST BAR FONKSİYONLARI
-        // ==========================================
-
-        // 1. Sidebar Aç/Kapa
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('hidden');
-        }
-
-        // 2. Tam Ekran (Fullscreen)
-        function toggleFullScreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    alert(`Error attempting to enable fullscreen: ${err.message}`);
-                });
-            } else {
-                if (document.exitFullscreen) document.exitFullscreen();
-            }
-        }
-
-        // 3. Tema Değiştirme (Aydınlık / Karanlık)
-        function toggleTheme() {
-            document.body.classList.toggle('light-theme');
-            const isLight = document.body.classList.contains('light-theme');
-            localStorage.setItem('theme', isLight ? 'light' : 'dark');
-        }
-
-        // Sayfa yüklendiğinde eski temayı hatırla
-        if(localStorage.getItem('theme') === 'light') {
-            document.body.classList.add('light-theme');
-        }
-
-        // 4. İndirme Menüsü Aç/Kapa
-        function toggleDownloadMenu() {
-            document.getElementById('downloadMenu').classList.toggle('show');
-        }
-
-        // Ekranın başka yerine tıklayınca indirme menüsünü kapat
-        window.onclick = function(event) {
-            if (!event.target.matches('.icon') && !event.target.matches('.dropdown-menu')) {
-                const dropdowns = document.getElementsByClassName("dropdown-menu");
-                for (let i = 0; i < dropdowns.length; i++) {
-                    if (dropdowns[i].classList.contains('show')) dropdowns[i].classList.remove('show');
-                }
-            }
-        }
-
-        // 5. Dosya İndirme (MD veya PDF)
         function downloadFile(type) {
             if (!currentMarkdownRaw) {
                 alert("Please select an article first to download.");
@@ -162,10 +132,6 @@
             }
         }
 
-        // ==========================================
-        // GITHUB API VE ARAMA FONKSİYONLARI
-        // ==========================================
-
         async function loadGitHubMenu() {
             try {
                 const response = await fetch(`https://api.github.com/repos/${REPO_NAME}/contents`);
@@ -190,31 +156,33 @@
                     const filesData = await filesResponse.json();
                     const mdFiles = filesData.filter(file => file.name.endsWith('.md'));
 
-                    mdFiles.forEach(file => {
+                    for (const file of mdFiles) {
                         const cleanTitle = file.name.replace('.md', '').replace(/-/g, ' ');
+                        const currentIndex = allArticlesData.length;
                         
-                        // Menüye link olarak ekle
+                        allArticlesData.push({ path: file.path, title: cleanTitle, content: "" });
+
                         const fileLink = document.createElement('a');
                         fileLink.className = 'file-link';
                         fileLink.innerText = cleanTitle;
-                        fileLink.onclick = () => loadMarkdownContent(file.path, cleanTitle);
+                        fileLink.onclick = () => loadMarkdownContent(file.path, cleanTitle, currentIndex);
                         menuContainer.appendChild(fileLink);
 
-                        // Arama motoru için dosyanın içeriğini arka planda çekip diziye kaydet
                         fetch(`https://raw.githubusercontent.com/${REPO_NAME}/${BRANCH}/${file.path}`)
                             .then(res => res.text())
                             .then(text => {
-                                allArticlesData.push({ path: file.path, title: cleanTitle, content: text });
+                                allArticlesData[currentIndex].content = text;
                             });
-                    });
+                    }
                 }
             } catch (error) {
                 menuContainer.innerHTML = `<p style="color: #ff7b72;">Error: ${error.message}</p>`;
             }
         }
 
-        async function loadMarkdownContent(filePath, title = "Document") {
+        async function loadMarkdownContent(filePath, title, index) {
             currentArticleTitle = title;
+            currentArticleIndex = index;
             contentBody.innerHTML = '<p style="color: #8b949e;">Loading data packets...</p>';
             tocList.innerHTML = '<li><span style="color: #8b949e; font-size: 0.85rem;">Analyzing headers...</span></li>';
             
@@ -223,13 +191,13 @@
                 const response = await fetch(rawUrl);
                 if (!response.ok) throw new Error('Dosya okunamadı.');
 
-                currentMarkdownRaw = await response.text(); // İndirme için ham veriyi kaydet
+                currentMarkdownRaw = await response.text(); 
                 contentBody.innerHTML = marked.parse(currentMarkdownRaw);
                 
                 Prism.highlightAll();
                 generateTOC();
+                updateNavigation();
                 
-                // Mobil cihazlarda makaleye tıklanınca sol menüyü otomatik kapat
                 if(window.innerWidth <= 768) toggleSidebar();
                 
             } catch (error) {
@@ -237,12 +205,37 @@
             }
         }
 
-        // Canlı ve Derinlemesine Arama (İçerikte arar)
+        function updateNavigation() {
+            const navContainer = document.getElementById('article-nav');
+            const prevBox = document.getElementById('nav-prev');
+            const nextBox = document.getElementById('nav-next');
+            const prevTitle = document.getElementById('nav-prev-title');
+            const nextTitle = document.getElementById('nav-next-title');
+
+            if (allArticlesData.length === 0 || currentArticleIndex === -1) return;
+            navContainer.style.display = 'flex';
+
+            if (currentArticleIndex > 0) {
+                prevBox.style.visibility = 'visible';
+                prevTitle.innerHTML = `&#8592; ${allArticlesData[currentArticleIndex - 1].title}`;
+                prevBox.onclick = () => loadMarkdownContent(allArticlesData[currentArticleIndex - 1].path, allArticlesData[currentArticleIndex - 1].title, currentArticleIndex - 1);
+            } else {
+                prevBox.style.visibility = 'hidden';
+            }
+
+            if (currentArticleIndex < allArticlesData.length - 1) {
+                nextBox.style.visibility = 'visible';
+                nextTitle.innerHTML = `${allArticlesData[currentArticleIndex + 1].title} &#8594;`;
+                nextBox.onclick = () => loadMarkdownContent(allArticlesData[currentArticleIndex + 1].path, allArticlesData[currentArticleIndex + 1].title, currentArticleIndex + 1);
+            } else {
+                nextBox.style.visibility = 'hidden';
+            }
+        }
+
         searchInput.addEventListener('input', function(e) {
             const term = e.target.value.toLowerCase();
-            
-            // Sol menüdeki isimleri filtrele
             const items = document.querySelectorAll('.file-link');
+            
             items.forEach(item => {
                 if (item.innerText.toLowerCase().includes(term)) {
                     item.style.display = 'block';
@@ -251,7 +244,6 @@
                 }
             });
 
-            // Orta alanda "Deep Search" (İçerik) sonuçlarını göster
             if(term.length > 2) {
                 const results = allArticlesData.filter(art => 
                     art.content.toLowerCase().includes(term) || art.title.toLowerCase().includes(term)
@@ -266,25 +258,27 @@
                         let snippet = res.content.substring(start, end).replace(/</g, '&lt;').replace(/>/g, '&gt;');
                         
                         html += `
-                            <div class="search-result-card" onclick="loadMarkdownContent('${res.path}', '${res.title}')">
+                            <div class="search-result-card" onclick="loadMarkdownContent('${res.path}', '${res.title}', allArticlesData.findIndex(a => a.path === '${res.path}'))">
                                 <h3 style="margin-top:0;">📄 ${res.title}</h3>
                                 <p style="font-size:0.9rem; color:#8b949e;">...${snippet}...</p>
                             </div>
                         `;
                     });
                     contentBody.innerHTML = html;
+                    document.getElementById('article-nav').style.display = 'none';
                     tocList.innerHTML = '<li><span style="color: #8b949e; font-size: 0.85rem;">Search active...</span></li>';
                 } else {
                     contentBody.innerHTML = `<h1>No results found for "${term}"</h1>`;
+                    document.getElementById('article-nav').style.display = 'none';
                 }
             } else if (term.length === 0) {
-                // Arama kutusu silinirse ana ekrana dön
                 contentBody.innerHTML = `<h1>Welcome to the Terminal 🚀</h1><p style="color: #8b949e;">Select an article from the left directory to start reading.</p>`;
+                document.getElementById('article-nav').style.display = 'none';
                 tocList.innerHTML = '<li><span style="color: #8b949e; font-size: 0.85rem;">Waiting for connection...</span></li>';
             }
         });
 
-        function generateTOC() {    
+        function generateTOC() {
             tocList.innerHTML = ''; 
             const headings = contentBody.querySelectorAll('h1, h2, h3');
 
@@ -311,21 +305,17 @@
                 tocList.appendChild(li);
             });
 
-            // --- YENİ EKLENEN: Dinamik Takip Sistemi (ScrollSpy) ---
             const tocLinks = tocList.querySelectorAll('a');
-            
             const observerOptions = {
                 root: null,
-                rootMargin: '-80px 0px -70% 0px', // Başlık ekranda belirginleştiğinde tetikler
+                rootMargin: '-80px 0px -70% 0px',
                 threshold: 0
             };
 
             const observer = new IntersectionObserver(entries => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        // Eski aktifleri temizle
                         tocLinks.forEach(link => link.classList.remove('active'));
-                        // Ekranda görünen başlığın linkini aktif yap
                         const activeId = entry.target.id;
                         const activeLink = tocList.querySelector(`a[href="#${activeId}"]`);
                         if (activeLink) {
